@@ -1,9 +1,11 @@
-const throttle = require('lodash.throttle');
+import throttle from 'lodash.throttle';
+
+const STORAGE_KEY = "feedback-form-state";
 
 const form = document.querySelector('.feedback-form');
 
-
 form.addEventListener('submit', handleSubmit);
+form.addEventListener('input', throttle(handleInput, 500));
 
 
 function saveItemStorage (key, value) {
@@ -11,7 +13,7 @@ function saveItemStorage (key, value) {
    const keyJSON = JSON.stringify(value);
     localStorage.setItem(key, keyJSON);
   } catch (error) {
-    // console.error("Set state error: ", error.message);
+    console.error("Set state error: ", error.message);
   }
 
 };
@@ -27,39 +29,40 @@ function readItemStorage (key) {
 }
 
 
-function handleInput (event) {
+function handleInput() {
     
-    const formData = {};
-    const { elements: { email, message } } = event.currentTarget;
+    const email = form.querySelector('[name="email"]');
+    const message = form.querySelector('[name="message"]');
+    
+    const dataForm = {
+        email: email.value,
+        message: message.value,
+    }
 
-    console.log(event.currentTarget.elements)
+    return saveItemStorage(STORAGE_KEY, dataForm);
    
-    formData.email = email.value;
-    formData.message = message.value;
-
-    saveItemStorage("feedback-form-state", formData)
-
-       
 };
 
-form.addEventListener('input', throttle(handleInput, 500));
+
 
 function handleSubmit(event) {
     event.preventDefault();
 
-    console.log(readItemStorage("feedback-form-state"));
-
+    console.log(readItemStorage(STORAGE_KEY));
+    
     event.currentTarget.reset();
+    localStorage.removeItem(STORAGE_KEY);
 }
 
 function populateText() {
-    const savedMessage = readItemStorage("feedback-form-state");
+    const savedMessage = readItemStorage(STORAGE_KEY);
     if (savedMessage) {
-        form.elements.email.value = savedMessage.email;
-        form.elements.message.value = savedMessage.message;
+        const { elements: { email, message } } = form;
+        email.value = savedMessage.email;
+        message.value = savedMessage.message;
     }
 }
 
-document.addEventListener("DOMContentLoaded", populateText )
+document.addEventListener("DOMContentLoaded", populateText);
 
 
