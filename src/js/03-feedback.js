@@ -30,19 +30,15 @@ function readItemStorage (key) {
 
 
 function handleInput() {
-    
-    const email = form.querySelector('[name="email"]');
-    const message = form.querySelector('[name="message"]');
-    
+
     const dataForm = {
-        email: email.value,
-        message: message.value,
+        email: form.elements.email.value,
+        message: form.elements.message.value,
     }
 
     return saveItemStorage(STORAGE_KEY, dataForm);
    
 };
-
 
 
 function handleSubmit(event) {
