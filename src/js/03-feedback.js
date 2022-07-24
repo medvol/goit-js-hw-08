@@ -60,7 +60,7 @@ function handleSubmitForm(event) {
 function populateTextOnForm() {
   const savedText = readItemStorage(STORAGE_KEY);
   
-    if (savedMessage) {
+    if (savedText) {
         const { elements: { email, message } } = form;
         email.value = savedText.email;
         message.value = savedText.message;
