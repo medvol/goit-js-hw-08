@@ -4,61 +4,63 @@ const STORAGE_KEY = "feedback-form-state";
 
 const form = document.querySelector('.feedback-form');
 
-form.addEventListener('submit', handleSubmit);
+form.addEventListener('submit', handleSubmitForm);
 form.addEventListener('input', throttle(handleInput, 500));
 
 
 function saveItemStorage (key, value) {
   try {
-   const keyJSON = JSON.stringify(value);
-    localStorage.setItem(key, keyJSON);
+   const itemJSON = JSON.stringify(value);
+    localStorage.setItem(key, itemJSON);
   } catch (error) {
     console.error("Set state error: ", error.message);
-  }
+  };
 
 };
 
 function readItemStorage (key) {
   try {
-    const keyJSON = localStorage.getItem(key);
+    const itemJSON = localStorage.getItem(key);
 
-    return keyJSON === keyJSON ? JSON.parse(keyJSON) : null;
+    return itemJSON === itemJSON ? JSON.parse(itemJSON) : null;
   } catch (error) {
     console.error("Get state error: ", error.message);
-  }
-}
+  };
+};
 
 
 function handleInput() {
+  const { elements: { email, message } } = form;
 
-    const dataForm = {
-        email: form.elements.email.value,
-        message: form.elements.message.value,
-    }
+  const dataForm = {
+    email: email.value,
+    message: message.value,
+  };
 
     return saveItemStorage(STORAGE_KEY, dataForm);
    
 };
 
 
-function handleSubmit(event) {
+function handleSubmitForm(event) {
     event.preventDefault();
 
     console.log(readItemStorage(STORAGE_KEY));
     
     event.currentTarget.reset();
     localStorage.removeItem(STORAGE_KEY);
-}
+};
 
-function populateText() {
-    const savedMessage = readItemStorage(STORAGE_KEY);
+function populateTextOnForm() {
+  const savedText = readItemStorage(STORAGE_KEY);
+  
     if (savedMessage) {
         const { elements: { email, message } } = form;
-        email.value = savedMessage.email;
-        message.value = savedMessage.message;
-    }
-}
+        email.value = savedText.email;
+        message.value = savedText.message;
+  };
+};
 
-document.addEventListener("DOMContentLoaded", populateText);
+document.addEventListener("DOMContentLoaded", populateTextOnForm);
 
 

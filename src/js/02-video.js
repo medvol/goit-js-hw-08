@@ -3,58 +3,60 @@ import throttle from 'lodash.throttle';
 import Player from '@vimeo/player';
 
 const iframe = document.querySelector('#vimeo-player');
-const iframePlayer = new Player(iframe);
+const player = new Player(iframe);
+const STORAGE_KEY = "videoplayer-current-time";
 
 const saveItemStorage = (key, value) => {
   try {
-   const keyJSON = JSON.stringify(value);
-    localStorage.setItem(key, keyJSON);
+    const itemJSON = JSON.stringify(value);
+    localStorage.setItem(key, itemJSON);
   } catch (error) {
     console.error("Set state error: ", error.message);
   }
 
-}
+};
 
-const onPlay = function (data) {
+const onPlay = (currentTime) => {
 
-  saveItemStorage("videoplayer-current-time", data.seconds);
+  saveItemStorage(STORAGE_KEY, currentTime.seconds);
  
 };
 
-iframePlayer.on('timeupdate', throttle(onPlay, 1000));
+player.on('timeupdate', throttle(onPlay, 1000));
 
        
 const readItemStorage = key => {
   try {
-    const keyJSON = localStorage.getItem(key);
+    const itemJSON = localStorage.getItem(key);
 
-    return keyJSON === keyJSON ? JSON.parse(keyJSON) : null;
+    return itemJSON === itemJSON ? JSON.parse(itemJSON) : null;
   } catch (error) {
     console.error("Get state error: ", error.message);
   }
-}
+};
 
-const savedTime = readItemStorage("videoplayer-current-time");
+const savedCurrentTime = readItemStorage(STORAGE_KEY);
 
 const handleReload = () => {
-  iframePlayer.setCurrentTime(savedTime).then(function(seconds) {
-    // seconds = the actual time that the player seeked to
-   
-}).catch(function(error) {
-    switch (error.name) {
-        case 'RangeError':
-            // the time was less than 0 or greater than the video’s duration
-            break;
 
-        default:
-            // some other error occurred
-            break;
+  player.setCurrentTime(savedCurrentTime).then(function (seconds) {    
+  }).catch(function (error) {
+    switch (error.name) {
+      case 'RangeError':
+        // the time was less than 0 or greater than the video’s duration
+        break;
+
+      default:
+        // some other error occurred
+        break;
     }
-});
+  });
   
-}
+};
+
+document.addEventListener("DOMContentLoaded", handleReload);
  
-document.addEventListener("DOMContentLoaded", handleReload )
+
 
 
 
