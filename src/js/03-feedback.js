@@ -43,8 +43,14 @@ function handleInput() {
 
 
 function handleSubmitForm(event) {
-    event.preventDefault();
+  event.preventDefault();
+  
+  const {elements: { email, password }} = event.currentTarget;
 
+    if (email.value === '' || password.value === '') {
+    return console.log(alert('Please fill all fields!'));
+  };
+    
     console.log(readItemStorage(STORAGE_KEY));
     
     event.currentTarget.reset();
